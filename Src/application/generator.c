@@ -84,4 +84,6 @@ void set_duty() {
     __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, compare_value);
 }
 
-void generator_update_sine_frequency(int32_t value) {}
+void generator_update_sine_frequency(int32_t value) {
+    (void)value;
+}

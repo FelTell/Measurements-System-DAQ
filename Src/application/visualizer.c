@@ -1,3 +1,4 @@
+#include "application/ntc_data.h"
 #include "stm32f1xx_hal.h"
 #include "usbd_cdc_if.h"
 
@@ -6,14 +7,31 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_CHANNEL   7
+#define MAX_CHANNEL   3
 #define MAX_FREQUENCY 200
 #define MIN_FREQUENCY 1
 #define MAX_TX_SIZE   100
 #define GAIN_ADC      (4.095 / 3.3)
 
-static uint16_t configured_period_ms   = 1000;
-static uint8_t activated_channels_flag = 1;
+static uint16_t get_lux();
+static uint16_t get_voltage();
+static uint16_t get_current();
+static uint16_t get_power();
+static int16_t get_temperature();
+
+enum {
+    channel_none,
+    channel_temperature,
+    channel_lux,
+    channel_voltage,
+    channel_current,
+    channel_power,
+    channel_electricity,
+    channel_all,
+    channel_size
+} channel_to_visualize = channel_none;
+
+static uint16_t configured_period_ms = 1000;
 static uint16_t adc_buf[MAX_CHANNEL + 1];
 
 extern ADC_HandleTypeDef hadc1;
@@ -46,18 +64,42 @@ void visualizer_update_frequency(int32_t value) {
 }
 
 void visualizer_print_channels(void) {
-    if (!activated_channels_flag) {
-        return;
-    }
     char stringToSend[MAX_TX_SIZE];
     uint8_t index = 0;
 
-    for (uint8_t i = 0; i <= MAX_CHANNEL; ++i) {
-        if (activated_channels_flag & (1 << i)) {
-            index +=
-                sprintf(stringToSend + index, "%.1f\t", (float)(adc_buf[i] / GAIN_ADC));
+    switch (channel_to_visualize) {
+        case channel_none: break;
+        case channel_temperature:
+            index += sprintf(stringToSend + index, "%d\t", get_temperature());
+            break;
+        case channel_lux:
+            index += sprintf(stringToSend + index, "%d\t", get_lux());
+            break;
+        case channel_voltage:
+            index += sprintf(stringToSend + index, "%d\t", get_voltage());
+            break;
+        case channel_current:
+            index += sprintf(stringToSend + index, "%d\t", get_current());
+            break;
+        case channel_power:
+            index += sprintf(stringToSend + index, "%d\t", get_power());
+            break;
+        case channel_electricity:
+            index += sprintf(stringToSend + index, "%d\t", get_voltage());
+            index += sprintf(stringToSend + index, "%d\t", get_current());
+            index += sprintf(stringToSend + index, "%d\t", get_power());
+            break;
+        case channel_all:
+            index += sprintf(stringToSend + index, "%d\t", get_temperature());
+            index += sprintf(stringToSend + index, "%d\t", get_lux());
+            index += sprintf(stringToSend + index, "%d\t", get_voltage());
+            index += sprintf(stringToSend + index, "%d\t", get_current());
+            index += sprintf(stringToSend + index, "%d\t", get_power());
+            break;
+        default: {
         }
     }
+
     sprintf(stringToSend + index++, "\n");
 
     if (index > MAX_TX_SIZE) {
@@ -70,28 +112,39 @@ uint16_t visualizer_get_period(void) {
     return configured_period_ms;
 }
 
-void visualizer_update_channels(uint8_t channel, bool status) {
+void visualizer_update_channels(uint8_t channel) {
     char stringToSend[MAX_TX_SIZE];
     int32_t index = 0;
 
-    if (channel > MAX_CHANNEL) {
+    if (channel >= channel_size) {
         index += sprintf(stringToSend, "Channel not allowed. ");
     } else {
-        if (status) {
-            activated_channels_flag |= (1 << channel);
-            index += sprintf(stringToSend + index, "Channel %d added. ", channel);
-        } else {
-            activated_channels_flag &= ~(1 << channel);
-            index += sprintf(stringToSend + index, "Channel %d removed. ", channel);
-        }
+        channel_to_visualize = channel;
     }
-    index += sprintf(stringToSend + index, "Added channels:");
-    for (uint8_t i = 0; i <= MAX_CHANNEL; ++i) {
-        if (activated_channels_flag & (1 << i)) {
-            index += sprintf(stringToSend + index, " %d", i);
-        }
-    }
+    index += sprintf(stringToSend + index, "Showing channel: %d", channel_to_visualize);
+
     sprintf(stringToSend + index++, "\n");
 
     CDC_Transmit_FS((uint8_t*)stringToSend, index);
+}
+
+static int16_t get_temperature() {
+    return adc_to_celsius[adc_buf[0]];
+}
+
+// TODO (Felipe): do
+static uint16_t get_lux() {
+    return adc_buf[1];
+}
+
+static uint16_t get_voltage() {
+    return adc_buf[2];
+}
+
+static uint16_t get_current() {
+    return adc_buf[3];
+}
+
+static uint16_t get_power() {
+    return get_voltage() * get_current();
 }

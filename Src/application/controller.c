@@ -37,18 +37,10 @@ void controller_receive_message(char* message, uint32_t size) {
         module_start();
     } else if (strncmp(message, "stop", 4) == 0) {
         module_stop();
-    } else if (strncmp(message, "add", 3) == 0) {
-        visualizer_update_channels(atoi(&message[3]), true);
-    } else if (strncmp(message, "remove", 6) == 0) {
-        visualizer_update_channels(atoi(&message[6]), false);
+    } else if (strncmp(message, "show", 4) == 0) {
+        visualizer_update_channels(atoi(&message[4]));
     } else if (strncmp(message, "freq", 4) == 0) {
         visualizer_update_frequency(atoi(&message[4]));
-    } else if (strncmp(message, "sine_freq", 9) == 0) {
-        generator_update_sine_frequency(atoi(&message[9]));
-    } else if (strncmp(message, "pwm_freq", 8) == 0) {
-        generator_update_pwm_frequency(atoi(&message[8]));
-    } else if (strncmp(message, "pwm_duty", 8) == 0) {
-        generator_update_pwm_duty(atoi(&message[8]));
     }
 }
 
