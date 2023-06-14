@@ -1,23 +1,15 @@
-#include "application/ntc_data.h"
-#include "stm32f1xx_hal.h"
+#include "application/visualizer.h"
+
+#include "application/electrical_analyzer.h"
 #include "usbd_cdc_if.h"
 
-#include <application/visualizer.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_CHANNEL   3
 #define MAX_FREQUENCY 200
 #define MIN_FREQUENCY 1
 #define MAX_TX_SIZE   100
-#define GAIN_ADC      (4.095 / 3.3)
-
-static uint16_t get_lux();
-static uint16_t get_voltage();
-static uint16_t get_current();
-static uint16_t get_power();
-static int16_t get_temperature();
 
 enum {
     channel_none,
@@ -32,14 +24,7 @@ enum {
 } channel_to_visualize = channel_none;
 
 static uint16_t configured_period_ms = 1000;
-static uint16_t adc_buf[MAX_CHANNEL + 1];
 
-extern ADC_HandleTypeDef hadc1;
-
-void visualizer_init(void) {
-    HAL_ADCEx_Calibration_Start(&hadc1);
-    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, MAX_CHANNEL + 1);
-}
 
 void visualizer_update_frequency(int32_t value) {
     char stringToSend[MAX_TX_SIZE];
@@ -126,25 +111,4 @@ void visualizer_update_channels(uint8_t channel) {
     sprintf(stringToSend + index++, "\n");
 
     CDC_Transmit_FS((uint8_t*)stringToSend, index);
-}
-
-static int16_t get_temperature() {
-    return adc_to_celsius[adc_buf[0]];
-}
-
-// TODO (Felipe): do
-static uint16_t get_lux() {
-    return adc_buf[1];
-}
-
-static uint16_t get_voltage() {
-    return adc_buf[2];
-}
-
-static uint16_t get_current() {
-    return adc_buf[3];
-}
-
-static uint16_t get_power() {
-    return get_voltage() * get_current();
 }

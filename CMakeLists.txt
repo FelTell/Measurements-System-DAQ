@@ -104,6 +104,7 @@ target_sources(${EXE_NAME} PRIVATE
     Src/application/generator.c
     Src/application/timer_handler.c
     Src/application/visualizer.c
+    Src/application/electrical_analyzer.c
 )
 
 target_include_directories(${EXE_NAME} PRIVATE

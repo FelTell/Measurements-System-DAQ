@@ -17,7 +17,7 @@ static bool controller_status = false;
 
 void controller_init(void) {
     module_stop();
-    visualizer_init();
+    init_electrical_analyzer();
     timer_restart(&visualizer_timer);
 }
 
