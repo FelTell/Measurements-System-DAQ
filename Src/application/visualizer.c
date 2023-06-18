@@ -25,7 +25,6 @@ enum {
 
 static uint16_t configured_period_ms = 1000;
 
-
 void visualizer_update_frequency(int32_t value) {
     char stringToSend[MAX_TX_SIZE];
     int32_t tam;
@@ -55,10 +54,10 @@ void visualizer_print_channels(void) {
     switch (channel_to_visualize) {
         case channel_none: break;
         case channel_temperature:
-            index += sprintf(stringToSend + index, "%d\t", get_temperature());
+            index += sprintf(stringToSend + index, "%.2f °C\t", get_temperature());
             break;
         case channel_lux:
-            index += sprintf(stringToSend + index, "%d\t", get_lux());
+            index += sprintf(stringToSend + index, "%.1f lx\t", get_lux());
             break;
         case channel_voltage:
             index += sprintf(stringToSend + index, "%d\t", get_voltage());
@@ -75,8 +74,8 @@ void visualizer_print_channels(void) {
             index += sprintf(stringToSend + index, "%d\t", get_power());
             break;
         case channel_all:
-            index += sprintf(stringToSend + index, "%d\t", get_temperature());
-            index += sprintf(stringToSend + index, "%d\t", get_lux());
+            index += sprintf(stringToSend + index, "%.2f °C\t", get_temperature());
+            index += sprintf(stringToSend + index, "%.1f lx\t", get_lux());
             index += sprintf(stringToSend + index, "%d\t", get_voltage());
             index += sprintf(stringToSend + index, "%d\t", get_current());
             index += sprintf(stringToSend + index, "%d\t", get_power());
