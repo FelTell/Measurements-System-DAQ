@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_FREQUENCY 200
+#define MAX_FREQUENCY 500
 #define MIN_FREQUENCY 1
 #define MAX_TX_SIZE   100
 
@@ -18,8 +18,12 @@ enum {
     channel_voltage,
     channel_current,
     channel_power,
-    channel_electricity,
-    channel_all,
+    channel_voltage_current_power,
+    channel_lux_temperature,
+    channel_voltage_rms,
+    channel_current_rms,
+    channel_power_rms,
+    channel_voltage_current_power_rms,
     channel_size
 } channel_to_visualize = channel_none;
 
@@ -52,34 +56,33 @@ void visualizer_print_channels(void) {
     uint8_t index = 0;
 
     switch (channel_to_visualize) {
-        case channel_none: break;
+        case channel_none: return;
         case channel_temperature:
             index += sprintf(stringToSend + index, "%.2f °C\t", get_temperature());
+
             break;
         case channel_lux:
             index += sprintf(stringToSend + index, "%.1f lx\t", get_lux());
+
             break;
         case channel_voltage:
-            index += sprintf(stringToSend + index, "%d\t", get_voltage());
+            index += sprintf(stringToSend + index, "%d V\t", get_voltage());
             break;
         case channel_current:
-            index += sprintf(stringToSend + index, "%d\t", get_current());
+            index += sprintf(stringToSend + index, "%d A\t", get_current());
             break;
         case channel_power:
-            index += sprintf(stringToSend + index, "%d\t", get_power());
+            index += sprintf(stringToSend + index, "%d W\t", get_power());
             break;
-        case channel_electricity:
-            index += sprintf(stringToSend + index, "%d\t", get_voltage());
-            index += sprintf(stringToSend + index, "%d\t", get_current());
-            index += sprintf(stringToSend + index, "%d\t", get_power());
-            break;
-        case channel_all:
+        case channel_lux_temperature:
             index += sprintf(stringToSend + index, "%.2f °C\t", get_temperature());
             index += sprintf(stringToSend + index, "%.1f lx\t", get_lux());
-            index += sprintf(stringToSend + index, "%d\t", get_voltage());
-            index += sprintf(stringToSend + index, "%d\t", get_current());
-            index += sprintf(stringToSend + index, "%d\t", get_power());
             break;
+
+        // case channel_voltage_rms: get_voltage_rms(); break;
+        // case channel_current_rms: get_current_rms(); break;
+        // case channel_power_rms: get_power_rms(); break;
+        // case channel_voltage_current_power_rms: get_power_rms(); break;
         default: {
         }
     }
@@ -106,6 +109,24 @@ void visualizer_update_channels(uint8_t channel) {
         channel_to_visualize = channel;
     }
     index += sprintf(stringToSend + index, "Showing channel: %d", channel_to_visualize);
+
+    switch (channel_to_visualize) {
+
+        case channel_none: visualizer_update_frequency(1); break;
+        case channel_temperature:
+        case channel_lux:
+        case channel_lux_temperature: visualizer_update_frequency(2); break;
+        case channel_voltage:
+        case channel_current:
+        case channel_power:
+        case channel_voltage_current_power: visualizer_update_frequency(500); break;
+        case channel_voltage_rms:
+        case channel_current_rms:
+        case channel_power_rms:
+        case channel_voltage_current_power_rms: visualizer_update_frequency(1); break;
+        default: {
+        }
+    }
 
     sprintf(stringToSend + index++, "\n");
 

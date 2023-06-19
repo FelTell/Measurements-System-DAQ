@@ -1,9 +1,11 @@
+#include "application/controller.h"
+
+#include "application/electrical_analyzer.h"
+#include "application/generator.h"
+#include "application/timer_handler.h"
+#include "application/visualizer.h"
 #include "main.h"
 
-#include <application/controller.h>
-#include <application/generator.h>
-#include <application/timer_handler.h>
-#include <application/visualizer.h>
 #include <stdlib.h>
 #include <string.h>
 
