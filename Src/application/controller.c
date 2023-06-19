@@ -19,13 +19,14 @@ static bool controller_status = false;
 
 void controller_init(void) {
     module_stop();
-    init_electrical_analyzer();
-    timer_restart(&visualizer_timer);
+    electrical_analyzer_init();
+    visualizer_timer = timer_update();
 }
 
 void controller_handler(void) {
+    electrical_analyzer_handler();
     if (controller_status && timer_wait_ms(visualizer_timer, visualizer_get_period())) {
-        timer_restart(&visualizer_timer);
+        visualizer_timer = timer_update();
         visualizer_print_channels();
     }
 }

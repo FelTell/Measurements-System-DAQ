@@ -1,6 +1,7 @@
-#include <application/timer_handler.h>
 #include "stdbool.h"
 #include "stm32f1xx.h"
+
+#include <application/timer_handler.h>
 
 bool timer_wait_ms(uint32_t timer_start, uint32_t delay) {
     const uint32_t current_time = HAL_GetTick();
@@ -10,6 +11,7 @@ bool timer_wait_ms(uint32_t timer_start, uint32_t delay) {
     return false;
 }
 
-void timer_restart(uint32_t* timer_to_restart) {
-    *timer_to_restart = HAL_GetTick();
+ uint32_t timer_update(void) {
+    return HAL_GetTick();
 }
+

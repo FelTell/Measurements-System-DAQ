@@ -66,23 +66,33 @@ void visualizer_print_channels(void) {
 
             break;
         case channel_voltage:
-            index += sprintf(stringToSend + index, "%d V\t", get_voltage());
+            index += sprintf(stringToSend + index, "%i V\t", get_voltage());
             break;
         case channel_current:
-            index += sprintf(stringToSend + index, "%d A\t", get_current());
+            index += sprintf(stringToSend + index, "%i mA\t", get_current());
             break;
         case channel_power:
-            index += sprintf(stringToSend + index, "%d W\t", get_power());
+            index += sprintf(stringToSend + index, "%i mW\t", get_power());
             break;
         case channel_lux_temperature:
-            index += sprintf(stringToSend + index, "%.2f °C\t", get_temperature());
+            index += sprintf(stringToSend + index, "%.2f °C, \t", get_temperature());
             index += sprintf(stringToSend + index, "%.1f lx\t", get_lux());
             break;
 
-        // case channel_voltage_rms: get_voltage_rms(); break;
-        // case channel_current_rms: get_current_rms(); break;
-        // case channel_power_rms: get_power_rms(); break;
-        // case channel_voltage_current_power_rms: get_power_rms(); break;
+        case channel_voltage_rms:
+            index += sprintf(stringToSend + index, "%i Vrms\t", get_voltage_rms());
+            break;
+        case channel_current_rms:
+            index += sprintf(stringToSend + index, "%i Arms\t", get_current_rms());
+            break;
+        case channel_power_rms:
+            index += sprintf(stringToSend + index, "%i mW\t", get_power_rms());
+            break;
+        case channel_voltage_current_power_rms:
+            index += sprintf(stringToSend + index, "%i Vrms, \t", get_voltage_rms());
+            index += sprintf(stringToSend + index, "%i mArms, \t", get_current_rms());
+            index += sprintf(stringToSend + index, "%i mW\t", get_power_rms());
+            break;
         default: {
         }
     }
@@ -123,7 +133,7 @@ void visualizer_update_channels(uint8_t channel) {
         case channel_voltage_rms:
         case channel_current_rms:
         case channel_power_rms:
-        case channel_voltage_current_power_rms: visualizer_update_frequency(1); break;
+        case channel_voltage_current_power_rms: visualizer_update_frequency(2); break;
         default: {
         }
     }
