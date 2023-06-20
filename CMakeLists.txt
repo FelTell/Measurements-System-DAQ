@@ -95,7 +95,7 @@ set(ST_CONFIGURATION_SOURCES
 target_sources(${EXE_NAME} PRIVATE
     "${ST_CONFIGURATION_SOURCES}"
 
-    startup/startup_stm32f103xb.s
+    startup/startup_stm32f103c8tx.s
 
     Src/stm32f1xx_it.c
     Src/main.c

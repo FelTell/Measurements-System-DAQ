@@ -74,6 +74,11 @@ void visualizer_print_channels(void) {
         case channel_power:
             index += sprintf(stringToSend + index, "%i mW\t", get_power());
             break;
+        case channel_voltage_current_power:
+            index += sprintf(stringToSend + index, "%i V\t", get_voltage());
+            index += sprintf(stringToSend + index, "%i mA\t", get_current());
+            index += sprintf(stringToSend + index, "%i mW\t", get_power());
+            break;
         case channel_lux_temperature:
             index += sprintf(stringToSend + index, "%.2f °C, \t", get_temperature());
             index += sprintf(stringToSend + index, "%.1f lx\t", get_lux());
@@ -111,10 +116,12 @@ uint16_t visualizer_get_period(void) {
 
 void visualizer_update_channels(uint8_t channel) {
     char stringToSend[MAX_TX_SIZE];
-    int32_t index = 0;
+    int32_t index      = 0;
+    uint16_t frequency = 1;
 
     if (channel >= channel_size) {
         index += sprintf(stringToSend, "Channel not allowed. ");
+        channel_to_visualize = 0;
     } else {
         channel_to_visualize = channel;
     }
@@ -122,18 +129,30 @@ void visualizer_update_channels(uint8_t channel) {
 
     switch (channel_to_visualize) {
 
-        case channel_none: visualizer_update_frequency(1); break;
+        case channel_none:
+            frequency = 1;
+            set_rms_acquisition_status(false);
+            break;
         case channel_temperature:
         case channel_lux:
-        case channel_lux_temperature: visualizer_update_frequency(2); break;
+        case channel_lux_temperature:
+            frequency = 2;
+            set_rms_acquisition_status(false);
+            break;
         case channel_voltage:
         case channel_current:
         case channel_power:
-        case channel_voltage_current_power: visualizer_update_frequency(500); break;
+        case channel_voltage_current_power:
+            frequency = 500;
+            set_rms_acquisition_status(false);
+            break;
         case channel_voltage_rms:
         case channel_current_rms:
         case channel_power_rms:
-        case channel_voltage_current_power_rms: visualizer_update_frequency(2); break;
+        case channel_voltage_current_power_rms:
+            frequency = 2;
+            set_rms_acquisition_status(true);
+            break;
         default: {
         }
     }
@@ -141,4 +160,7 @@ void visualizer_update_channels(uint8_t channel) {
     sprintf(stringToSend + index++, "\n");
 
     CDC_Transmit_FS((uint8_t*)stringToSend, index);
+    visualizer_update_frequency(frequency);
+
+    HAL_Delay(1000);
 }

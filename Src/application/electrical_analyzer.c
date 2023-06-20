@@ -2,9 +2,9 @@
 
 #include "application/timer_handler.h"
 #include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_tim.h"
 
 #include <math.h>
-#include <stdbool.h>
 
 #define NUM_CHANNELS     4
 #define ADC_BIT_TO_mV(x) (((3300000 / 4095) * x) / 1000)
@@ -45,8 +45,9 @@
 #define CURRENT_BIT_TO_REDUCED_mV(x) (ADC_BIT_TO_mV(x) - CURRENT_REDUCED_OFFSET_mV)
 #define CURRENT_BIT_TO_REAL_mA(x)    ((CURRENT_GAIN * CURRENT_BIT_TO_REDUCED_mV(x)) / 1000)
 
-// extern HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
+static void phase_delay(uint32_t delay_us);
 
+extern TIM_HandleTypeDef htim2;
 extern ADC_HandleTypeDef hadc1;
 extern DMA_HandleTypeDef hdma_adc1;
 
@@ -65,10 +66,14 @@ static int16_t current_rms;
 void electrical_analyzer_init(void) {
     HAL_ADCEx_Calibration_Start(&hadc1);
     HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, NUM_CHANNELS);
+    HAL_TIM_Base_Start(&htim2);
     timer = timer_update();
 }
-
+bool rms_acquisition_status = false;
 void electrical_analyzer_handler(void) {
+    if (!rms_acquisition_status) {
+        return;
+    }
     if (!data_ready) {
         return;
     }
@@ -76,6 +81,10 @@ void electrical_analyzer_handler(void) {
     current_rms = sqrt(current_sum_of_square / n);
     data_ready  = false;
     timer       = timer_update();
+}
+
+void set_rms_acquisition_status(bool status) {
+    rms_acquisition_status = status;
 }
 
 int32_t get_voltage(void) {
@@ -100,7 +109,10 @@ float get_temperature(void) {
 }
 
 int32_t get_power(void) {
-    return get_voltage() * get_current();
+    const int16_t firstValue = get_voltage();
+    phase_delay(600);
+    const int16_t secondValue = get_current();
+    return firstValue * secondValue;
 }
 
 int32_t get_voltage_rms(void) {
@@ -139,5 +151,15 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
         tmp_current_sum_of_square = 0;
         tmp_voltage_sum_of_square = 0;
         tmpN                      = 0;
+    }
+}
+
+static void phase_delay(uint32_t delay_us) {
+    const uint32_t timer_start_us = __HAL_TIM_GET_COUNTER(&htim2);
+    while (true) {
+        const uint32_t current_time_us = __HAL_TIM_GET_COUNTER(&htim2);
+        if ((current_time_us - timer_start_us) >= delay_us) {
+            return;
+        }
     }
 }

@@ -1,10 +1,13 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 void electrical_analyzer_init(void);
 
 void electrical_analyzer_handler(void);
+
+void set_rms_acquisition_status(bool status);
 
 float get_lux(void);
 
