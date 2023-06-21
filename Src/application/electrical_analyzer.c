@@ -55,8 +55,8 @@ static uint16_t adc_buf[NUM_CHANNELS];
 
 static uint32_t timer;
 
-static int32_t voltage_sum_of_square;
-static int32_t current_sum_of_square;
+static uint32_t voltage_sum_of_square;
+static uint32_t current_sum_of_square;
 static int32_t n;
 static bool data_ready;
 
@@ -137,13 +137,14 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
         return;
     }
 
-    const int32_t current_value_mA = CURRENT_BIT_TO_REAL_mA(adc_buf[ADC_CHANNEL_CURRENT]);
+    const uint32_t current_value_mA =
+        CURRENT_BIT_TO_REAL_mA(adc_buf[ADC_CHANNEL_CURRENT]);
     tmp_current_sum_of_square += current_value_mA * current_value_mA;
-    const int32_t voltage_value_mV = VOLTAGE_BIT_TO_REAL_V(adc_buf[ADC_CHANNEL_VOLTAGE]);
+    const uint32_t voltage_value_mV = VOLTAGE_BIT_TO_REAL_V(adc_buf[ADC_CHANNEL_VOLTAGE]);
     tmp_voltage_sum_of_square += voltage_value_mV * voltage_value_mV;
     tmpN++;
 
-    if (timer_wait_ms(timer, 250)) {
+    if (timer_wait_ms(timer, 100) && tmpN > 5000) {
         data_ready                = true;
         current_sum_of_square     = tmp_current_sum_of_square;
         voltage_sum_of_square     = tmp_voltage_sum_of_square;
