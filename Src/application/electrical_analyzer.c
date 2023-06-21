@@ -67,11 +67,11 @@ void electrical_analyzer_init(void) {
     HAL_ADCEx_Calibration_Start(&hadc1);
     HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, NUM_CHANNELS);
     HAL_TIM_Base_Start(&htim2);
-    timer = timer_update();
+    timer = timer_update_ms();
 }
-bool rms_acquisition_status = false;
+bool is_rms_acquisition_activated = false;
 void electrical_analyzer_handler(void) {
-    if (!rms_acquisition_status) {
+    if (!is_rms_acquisition_activated) {
         return;
     }
     if (!data_ready) {
@@ -80,11 +80,11 @@ void electrical_analyzer_handler(void) {
     voltage_rms = sqrt(voltage_sum_of_square / n);
     current_rms = sqrt(current_sum_of_square / n);
     data_ready  = false;
-    timer       = timer_update();
+    timer       = timer_update_ms();
 }
 
-void set_rms_acquisition_status(bool status) {
-    rms_acquisition_status = status;
+void set_is_rms_acquisition_activated(bool status) {
+    is_rms_acquisition_activated = status;
 }
 
 int32_t get_voltage(void) {

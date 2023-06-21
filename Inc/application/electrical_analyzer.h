@@ -7,7 +7,7 @@ void electrical_analyzer_init(void);
 
 void electrical_analyzer_handler(void);
 
-void set_rms_acquisition_status(bool status);
+void set_is_rms_acquisition_activated(bool status);
 
 float get_lux(void);
 

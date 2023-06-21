@@ -131,27 +131,27 @@ void visualizer_update_channels(uint8_t channel) {
 
         case channel_none:
             frequency = 1;
-            set_rms_acquisition_status(false);
+            set_is_rms_acquisition_activated(false);
             break;
         case channel_temperature:
         case channel_lux:
         case channel_lux_temperature:
             frequency = 2;
-            set_rms_acquisition_status(false);
+            set_is_rms_acquisition_activated(false);
             break;
         case channel_voltage:
         case channel_current:
         case channel_power:
         case channel_voltage_current_power:
             frequency = 500;
-            set_rms_acquisition_status(false);
+            set_is_rms_acquisition_activated(false);
             break;
         case channel_voltage_rms:
         case channel_current_rms:
         case channel_power_rms:
         case channel_voltage_current_power_rms:
             frequency = 2;
-            set_rms_acquisition_status(true);
+            set_is_rms_acquisition_activated(true);
             break;
         default: {
         }

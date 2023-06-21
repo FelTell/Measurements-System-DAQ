@@ -27,6 +27,6 @@ bool timer_wait_ms(uint32_t timer_start, uint32_t delay);
  *
  * @param timer_to_restart Address of timer specifier.
  */
-uint32_t timer_update(void);
+uint32_t timer_update_ms(void);
 
 #endif /* INC_TIMER_HANDLER_H_ */

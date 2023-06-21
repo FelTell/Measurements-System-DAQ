@@ -11,7 +11,6 @@ bool timer_wait_ms(uint32_t timer_start, uint32_t delay) {
     return false;
 }
 
- uint32_t timer_update(void) {
+uint32_t timer_update_ms(void) {
     return HAL_GetTick();
 }
-
