@@ -30,7 +30,7 @@ enum {
 
 static uint16_t configured_period_ms = 1000;
 
-static uint32_t timer;
+static uint32_t visualizer_timer;
 
 /**
  * @brief updates the frequency of the data visualization
@@ -64,10 +64,10 @@ void visualizer_update_frequency(int32_t value) {
  *
  */
 void visualizer_handler(void) {
-    if (!timer_wait_ms(timer, configured_period_ms)) {
+    if (!timer_wait_ms(visualizer_timer, configured_period_ms)) {
         return;
     }
-    timer = timer_update_ms();
+    visualizer_timer = timer_update_ms();
 
     char string_to_send[MAX_TX_SIZE];
     uint8_t index = 0;

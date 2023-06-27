@@ -126,11 +126,11 @@ int32_t get_instant_current(void) {
  * @return float value in lx
  */
 float get_lux(void) {
-    const uint16_t lux_value = adc_buf[ADC_CHANNEL_LUX];
+    const uint16_t lux_value = adc_buf[ADC_CHANNEL_LUX] - 150;
     if (lux_value < 470) {
         return 0;
     }
-    return ((float)(adc_buf[ADC_CHANNEL_LUX]) * LUX_SLOPE) + LUX_INTERCEPT;
+    return ((float)(lux_value)*LUX_SLOPE) + LUX_INTERCEPT;
 }
 
 /**

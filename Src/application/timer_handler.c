@@ -35,6 +35,16 @@ bool timer_wait_ms(uint32_t timer_start, uint32_t delay) {
 }
 
 /**
+ * @brief Updates a timer with the current tick in milliseconds
+ *
+ * @return uint32_t time in milliseconds that has passed since the chip has been powered
+ * up
+ */
+uint32_t timer_update_ms(void) {
+    return HAL_GetTick();
+}
+
+/**
  * @brief Starts to count ticks in microseconds by enabling a new timer peripheral with
  * tick configured to exactly 1 us
  *
@@ -43,15 +53,6 @@ void timer_us_init() {
     HAL_TIM_Base_Start(&htim2);
 }
 
-/**
- * @brief Updates a timer with the current tick in milliseconds
- *
- * @return uint32_t time in milliseconds that has passed since the chip has been powered
- * up
- */
-uint32_t timer_update_ms(void) {
-    return __HAL_TIM_GET_COUNTER(&htim2);
-}
 /**
  * @brief Waits a specific timer to be elapsed by a desired amount of microseconds. Allows
  * multiple timers by sending a different timer_start.
@@ -79,5 +80,5 @@ bool timer_wait_us(uint32_t timer_start, uint32_t delay) {
  * up
  */
 uint32_t timer_update_us(void) {
-    return HAL_GetTick();
+    return __HAL_TIM_GET_COUNTER(&htim2);
 }
