@@ -13,11 +13,11 @@ float get_lux(void);
 
 float get_temperature(void);
 
-int32_t get_voltage(void);
+int32_t get_instant_voltage(void);
 
-int32_t get_current(void);
+int32_t get_instant_current(void);
 
-int32_t get_power(void);
+int32_t get_instant_power(void);
 
 int32_t get_voltage_rms(void);
 
