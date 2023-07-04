@@ -33,16 +33,18 @@
 #define VOLTAGE_BIT_TO_REAL_V(x)     (VOLTAGE_GAIN * VOLTAGE_BIT_TO_REDUCED_mV(x) / 1000)
 
 // Defines about current acquisition
-#define CURRENT_REDUCED_MAX_mV 2760
-#define CURRENT_REDUCED_MIN_mV 80
-#define CURRENT_REAL_MAX_uA    (200 * 1000)
+#define CURRENT_REDUCED_MAX_mV   2760
+#define CURRENT_REDUCED_MIN_mV   80
+#define CURRENT_REAL_MAX_uV      (200 * 1000)
+#define CURRENT_REAL_SHUNT_VALUE (3)
 
 #define CURRENT_REDUCED_OFFSET_mV ((CURRENT_REDUCED_MIN_mV + CURRENT_REDUCED_MAX_mV) / 2)
 #define CURRENT_GAIN                                                                     \
-    (CURRENT_REAL_MAX_uA / (CURRENT_REDUCED_MAX_mV - CURRENT_REDUCED_OFFSET_mV))
+    (CURRENT_REAL_MAX_uV / (CURRENT_REDUCED_MAX_mV - CURRENT_REDUCED_OFFSET_mV))
 
 #define CURRENT_BIT_TO_REDUCED_mV(x) (ADC_BIT_TO_mV(x) - CURRENT_REDUCED_OFFSET_mV)
-#define CURRENT_BIT_TO_REAL_mA(x)    ((CURRENT_GAIN * CURRENT_BIT_TO_REDUCED_mV(x)) / 1000)
+#define CURRENT_BIT_TO_REAL_mA(x)                                                        \
+    ((CURRENT_GAIN * CURRENT_BIT_TO_REDUCED_mV(x)) / (CURRENT_REAL_SHUNT_VALUE * 1000))
 
 #define PHASE_DELAY_US                 600
 #define MINUMUM_SAMPLES_FOR_DATA_READY 10000
